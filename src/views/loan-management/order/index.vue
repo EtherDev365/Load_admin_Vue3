@@ -29,17 +29,8 @@
         <el-table-column prop="created_at" label="注册时间" />
         <el-table-column prop="approved_amount" label="审批金额" />
         <el-table-column prop="withdraw_amount" label="余额" />
-        <el-table-column prop="withdraw_status" label="期限" />
         <el-table-column prop="apply_period" label="期限" />
-        <el-table-column label="提现状态" width="120">
-          <template #default="scope">
-            {{
-              tableData[scope.$index].withdraw_status === 1 ? '已签约' :
-              tableData[scope.$index].withdraw_status === 2 ? '未提现' :
-                null
-            }}
-          </template>
-        </el-table-column>
+        <el-table-column prop="withdraw_time" label="提现时间" />
 
         <el-table-column label="短信/提现按钮">
           <template #default="scope">
@@ -49,21 +40,70 @@
           </template>
         </el-table-column>
 
-        <el-table-column label="授信操作" width="180">
+        <el-table-column label="转帐记录">
           <template #default="scope">
-            <el-button type="primary" size="small" @click="openEdit(scope.$index)">
-              修改提现金额
+            <div>
+              <el-button size="small">
+                转帐截图
+              </el-button>
+              <el-button style="margin-left: 0px !important;" size="small">
+                修改说明
+              </el-button>
+            </div>
+          </template>
+        </el-table-column>
+
+        <el-table-column label="保险截图">
+          <template #default="scope">
+            <div>
+              <el-button size="small">
+                保险截图
+              </el-button>
+              <el-button style="margin-left: 0px !important;" size="small" @click="openInsuranceEdit(scope.$index)">
+                修改2.00
+              </el-button>
+            </div>
+          </template>
+        </el-table-column>
+
+        <el-table-column label="监管截图">
+          <template #default="scope">
+            <div>
+              <el-button size="small">
+                监管截图
+              </el-button>
+              <el-button style="margin-left: 0px !important;" size="small" @click="openRegulatoryEdit(scope.$index)">
+                修改2
+              </el-button>
+            </div>
+          </template>
+        </el-table-column>
+
+
+        <el-table-column label="资金操作" width="180">
+          <template #default="scope">
+            <el-button type="primary" size="small" @click="openMoneyControl(scope.$index)">
+              订单状态【{{ tableData[scope.$index].app_status }}】
             </el-button>
           </template>
         </el-table-column>
         <el-table-column label="操作" width="180">
           <template #default="scope">
-            <el-button type="primary" size="small" @click="getProfile(scope.$index)">
-              查看资料
-            </el-button>
-            <el-button type="primary" size="small" @click="() => openSMSDialog(scope.$index)">
-              短信
-            </el-button>
+            <div>
+              <el-button size="small">
+                合同
+              </el-button>
+              <el-button type="danger" size="small" @click="() => openLoanDialog(scope.$index)">
+                放款
+              </el-button>
+              <el-button type="primary" style="margin-left: 0px !important; margin-top: 10px;" size="small"
+                @click="() => openRecoverDialog(scope.$index)">
+                恢复
+              </el-button>
+              <el-button style="margin-top: 10px;" size="small" @click="() => openSMSDialog(scope.$index)">
+                短信
+              </el-button>
+            </div>
           </template>
         </el-table-column>
       </el-table>
@@ -72,13 +112,17 @@
       <el-pagination background layout="prev, pager, next" :total="100" />
     </div>
   </el-card>
-  <el-dialog v-model="dialogVisible" title="Tips" width="50%" :before-close="handleClose">
+
+  <el-dialog v-model="dialogVisible" :title="isInsurance ? '保险金额' : '监管比例'" width="50%" :before-close="handleClose">
     <el-form label-width="100px">
       <el-form-item label="用户名">
         <el-input v-model="phone_number" disabled />
       </el-form-item>
-      <el-form-item label="提现金额">
-        <el-input v-model="withdraw_amount" type="number" placeholder="请输入登陆密码" />
+      <el-form-item v-if="isInsurance" label="保险金额">
+        <el-input v-model="insurance_amount" type="number" placeholder="" />
+      </el-form-item>
+      <el-form-item v-if="!isInsurance" label="监管比例">
+        <el-input v-model="regulatory_ratio" type="number" placeholder="" />
       </el-form-item>
       <!-- <el-form-item label="状态">
         <el-radio-group v-model="withdraw_button">
@@ -96,63 +140,7 @@
       </span>
     </template>
   </el-dialog>
-  <el-dialog v-model="detailVisible" title="查看资料" width="50%" :before-close="handleClose">
-    <div>
-      <table id="customers">
-        <tr>
-          <th>身份信息</th>
-          <th></th>
-        </tr>
-        <tr>
-          <td>真实姓名：{{ selectedUser.id_card_name }}</td>
-          <td>身份证号：{{ selectedUser.id_card_number }}</td>
-        </tr>
-        <tr>
-          <td>居住地址：{{ selectedUser.current_address }}</td>
-          <td>性别：{{ selectedUser.gender }}</td>
-        </tr>
-      </table>
 
-      <table id="customers">
-        <tr>
-          <th>银行卡信息</th>
-          <th></th>
-        </tr>
-        <tr>
-          <td>开户银行：{{ selectedUser.bank_address }}</td>
-          <td>银行卡号：{{ selectedUser.bank_card_number }}</td>
-        </tr>
-
-      </table>
-
-      <table id="customers">
-        <tr>
-          <th>其他信息</th>
-          <th></th>
-        </tr>
-        <tr>
-          <td>资金用途: {{ selectedUser.loan_way }}</td>
-          <td>公司地址：{{ selectedUser.work_address }}</td>
-        </tr>
-        <tr>
-          <td>工作年限: {{ selectedUser.loan_way }}</td>
-          <td>工资：{{ selectedUser.work_address }}</td>
-        </tr>
-        <tr>
-          <td>亲属姓名：{{ selectedUser.family_name }}</td>
-          <td>朋友关系：{{ selectedUser.family_relationship }}</td>
-        </tr>
-        <tr>
-          <td>亲属电话： {{ selectedUser.family_phone_number }}</td>
-          <td>朋友姓名：{{ selectedUser.friend_name }}</td>
-        </tr>
-        <tr>
-          <td>亲属联系关系： {{ selectedUser.friend_relationship }}</td>
-          <td>朋友电话：{{ selectedUser.friend_phone_number }}</td>
-        </tr>
-      </table>
-    </div>
-  </el-dialog>
   <el-dialog v-model="SMSdialog" title="SMSdialog" width="50%" :before-close="handleClose">
     <el-form label-width="100px">
       <el-form-item label="用户名">
@@ -163,18 +151,77 @@
       </el-form-item>
       <el-form-item style="display: inline-flex;">
         <el-button type="primary">立即发送</el-button>
-        <el-button type="danger">重置</el-button>
+        <el-button @click="() => SMSdialog = false">重置</el-button>
       </el-form-item>
     </el-form>
     <span class="">
       <span>常用短信：</span>
-      <el-button @click="setMessage">通过审核并授权额度</el-button>
+      <el-button @click="setSMSMessage(1)">银行卡异常</el-button>
+      <el-button @click="setSMSMessage(2)">垫付失败</el-button>
+      <el-button @click="setSMSMessage(3)">订单恢复</el-button>
+      <el-button @click="setSMSMessage(4)">验资失败</el-button>
+      <el-button @click="setSMSMessage(5)">银行卡流水不足</el-button>
+      <el-button @click="setSMSMessage(6)">反洗钱中心介入</el-button>
+      <el-button @click="setSMSMessage(7)">冻结</el-button>
     </span>
     <div>
       【1】点击上面常用按钮信息会自动加到发送框，再点发送；
     </div>
     <div>
       【2】如有需要增加和更改短信内容，请联系我
+    </div>
+  </el-dialog>
+
+  <el-dialog v-model="mainDialog" title="Tips" width="50%" :before-close="handleClose">
+    <el-form label-width="100px">
+      <el-form-item label="用户名">
+        <el-input v-model="phone_number" disabled />
+      </el-form-item>
+      <el-form-item label="提现按钮">
+        <el-radio-group v-model="withdraw_button">
+          <el-radio :label="1">显示</el-radio>
+          <el-radio :label="2">不显示</el-radio>
+        </el-radio-group>
+      </el-form-item>
+
+      <el-form-item v-if="!isMoneyControl" label="开户行">
+        <el-input v-model="bank_account" disabled />
+      </el-form-item>
+      <el-form-item v-if="!isMoneyControl" label="银行卡号(错误)">
+        <el-input v-model="bank_card_number" placeholder="" disabled />
+      </el-form-item>
+      <el-form-item v-if="!isMoneyControl" label="银行卡号(正确)">
+        <el-input v-model="bank_card_number" placeholder="" disabled />
+      </el-form-item>
+
+      <el-form-item label="APP状态">
+        <el-input v-model="app_status" />
+      </el-form-item>
+
+      <el-form-item label="APP备注">
+        <el-input v-model="app_remarks" type="textarea" />
+      </el-form-item>
+
+    </el-form>
+    <template #footer>
+      <span class="dialog-footer">
+        <el-button @click="() => mainDialog = false">重置</el-button>
+        <el-button type="primary" @click="editItem">
+          立即提交
+        </el-button>
+      </span>
+    </template>
+    <div v-if="isMoneyControl">
+      <span class="">
+        <span>常用：</span>
+        <el-button @click="setMessage(1)">银行卡异常</el-button>
+        <el-button @click="setMessage(2)">垫付失败</el-button>
+        <el-button @click="setMessage(3)">订单恢复</el-button>
+        <el-button @click="setMessage(4)">验资失败</el-button>
+        <el-button @click="setMessage(5)">银行卡流水不足</el-button>
+        <el-button @click="setMessage(6)">反洗钱中心介入</el-button>
+        <el-button @click="setMessage(7)">冻结</el-button>
+      </span>
     </div>
   </el-dialog>
 </template>
@@ -190,18 +237,28 @@ const tableData = ref([]);
 const switchList = ref([]);
 const contractSwitchList = ref([]);
 const SMSdialog = ref(false);
+const mainDialog = ref(false);
 const phone_number_search = ref('');
-const status_search = ref(-1);
+const status_search = ref('');
 const audit_result_search = ref(-1);
 const withdraw_status_search = ref(-1);
 const withdraw_button_search = ref(-1);
+const insurance_amount = ref();
+const isInsurance = ref(false);
+const isLoan = ref(false);
+const isMoneyControl = ref(false);
+const regulatory_ratio = ref();
 const detailVisible = ref(false);
 const message = ref('');
+const bank_account = ref('');
+const bank_card_number = ref('');
+const app_status = ref();
+const app_remarks = ref();
 const statusList = ref([
-  { label: '订单状态', value: -1 },
-  { label: '提现成功', value: 1 },
-  { label: '资金冻结', value: 2 },
-  { label: '二次冻结', value: 3 }
+  { label: '订单状态', value: '' },
+  { label: '提现成功', value: '提现成功' },
+  { label: '资金冻结', value: '资金冻结' },
+  { label: '二次冻结', value: '二次冻结' }
 ]);
 
 const withdraw_amount = ref();
@@ -209,16 +266,35 @@ const phone_number = ref();
 const id = ref();
 const withdraw_button = ref();
 const dialogVisible = ref(false);
+
+const appStyle = ref([
+  { status: '银行卡异常', remark: '您好！由于您的银行卡信息和身份信息不符，导致系统自动放款失败，资金冻结！请您仔细核对您的个人收款信息及时处理！' },
+  { status: '垫付失败', remark: '您好：由于公司资金发生冲突对接失败.请你尽快补齐!' },
+  { status: '订单恢复', remark: '订单恢复' },
+  { status: '验资失败', remark: '验资失败，请及时联系您的业务经理。' },
+  { status: '银行卡流水不足', remark: '检测到您的银行卡流水不足，未到达国家放款标准，需补充流水，才能下款！' },
+  { status: '反洗钱中心介入', remark: '您的订单被国家反洗钱中心介入调查，请配合平台工作人员积极处理' },
+  { status: '冻结', remark: '您好！由于检测到您的订单异常，风控部门冻结了您这笔贷款，请尽快联系您的客户经理进行处理！否则本公司将会提交银监部门强制扣除您这笔贷款' }
+]);
+const messageStyle = ref([
+  '您的订单已驳回，请登陆查看，已处理请忽略。系统自动发送，本条短信请勿回复，如果疑问请联系在线客服',
+  '您的订单已驳回，请登陆查看，已处理请忽略。系统自动发送，本条短信请勿回复，如果疑问请联系在线客服',
+  '您的订单已驳回，请登陆查看，已处理请忽略。系统自动发送，本条短信请勿回复，如果疑问请联系在线客服',
+  '您的订单已驳回，请登陆查看，已处理请忽略。系统自动发送，本条短信请勿回复，如果疑问请联系在线客服',
+  '您的订单已驳回，请登陆查看，已处理请忽略。系统自动发送，本条短信请勿回复，如果疑问请联系在线客服',
+  '您的订单已驳回，请登陆查看，已处理请忽略。系统自动发送，本条短信请勿回复，如果疑问请联系在线客服',
+  '冻结',
+])
 const {
   getOrderList,
-  updateOrder
+  updateOrder,
+  updateOrderInsurance,
+  updateAppStatus,
 } = orderStore()
 const {
   getUserById,
 } = userStore();
-const {
-  selectedUser
-} = storeToRefs(userStore());
+
 onMounted(async () => {
   getTableList();
 })
@@ -248,27 +324,86 @@ const getTableList = async () => {
   contractSwitchList.value = temp;
 }
 const editItem = async () => {
-  if (withdraw_amount.value && id.value) {
-    await updateOrder(id.value, withdraw_amount.value, withdraw_button.value);
-    dialogVisible.value = false;
-    getTableList();
+  if (id.value) {
+    if (isMoneyControl.value) {
+      if (app_status.value === '' || app_remarks.value === '')
+        return;
+      await updateAppStatus(id.value, withdraw_button.value, app_status.value, app_remarks.value)
+      mainDialog.value = false;
+      getTableList();
+    } else if (isInsurance.value) {
+      if (app_status.value === '' || app_remarks.value === '')
+        return;
+      await updateAppStatus(id.value, withdraw_button.value, app_status.value, app_remarks.value)
+      mainDialog.value = false;
+      getTableList();
+    } else {
+      if (app_status.value === '' || app_remarks.value === '')
+        return;
+      await updateAppStatus(id.value, withdraw_button.value, app_status.value, app_remarks.value)
+      mainDialog.value = false;
+      getTableList();
+    }
+    // await updateOrderInsurance(id.value, insurance_amount.value, regulatory_ratio.value);
+    // dialogVisible.value = false;
+    // getTableList();
   }
 }
-const openEdit = (index) => {
-  dialogVisible.value = true;
+const openMoneyControl = (index) => {
+  mainDialog.value = true;
+  isMoneyControl.value = true;
   id.value = tableData.value[index].id;
   phone_number.value = tableData.value[index].phone_number;
   withdraw_button.value = tableData.value[index].withdraw_button;
-  withdraw_amount.value = tableData.value[index].withdraw_amount;
+  app_status.value = tableData.value[index].app_status;
+  app_remarks.value = tableData.value[index].app_remarks;
 }
+const openInsuranceEdit = (index) => {
+  isInsurance.value = true;
+  dialogVisible.value = true;
+  id.value = tableData.value[index].id;
+  phone_number.value = tableData.value[index].phone_number;
+  insurance_amount.value = tableData.value[index].insurance_amount;
+  regulatory_ratio.value = tableData.value[index].regulatory_ratio;
+}
+const openRegulatoryEdit = (index) => {
+  isInsurance.value = false;
+  dialogVisible.value = true;
+  id.value = tableData.value[index].id;
+  phone_number.value = tableData.value[index].phone_number;
+  insurance_amount.value = tableData.value[index].insurance_amount;
+  regulatory_ratio.value = tableData.value[index].regulatory_ratio;
+}
+const openLoanDialog = (index) => {
+  isLoan.value = true;
+  mainDialog.value = true;
+  isMoneyControl.value = false;
+  id.value = tableData.value[index].id;
+  phone_number.value = tableData.value[index].phone_number;
+  withdraw_button.value = tableData.value[index].withdraw_button;
+  bank_account.value = tableData.value[index].bank_account;
+  bank_card_number.value = tableData.value[index].bank_card_number;
+  app_status.value = tableData.value[index].app_status;
+  app_remarks.value = tableData.value[index].app_remarks;
+}
+
+const openRecoverDialog = (index) => {
+  isLoan.value = false;
+  mainDialog.value = true;
+  isMoneyControl.value = false;
+  id.value = tableData.value[index].id;
+  phone_number.value = tableData.value[index].phone_number;
+  withdraw_button.value = tableData.value[index].withdraw_button;
+  bank_account.value = tableData.value[index].bank_account;
+  bank_card_number.value = tableData.value[index].bank_card_number;
+  app_status.value = tableData.value[index].app_status;
+  app_remarks.value = tableData.value[index].app_remarks;
+}
+
 const search = () => {
   getTableList();
 }
-const getProfile = async (id) => {
-  const response = await getUserById(tableData.value[id].user_id);
-  console.log(response.user);
-  detailVisible.value = true;
-}
+
 const openSMSDialog = async (index) => {
   id.value = tableData.value[index].id;
   phone_number.value = tableData.value[index].phone_number;
@@ -277,10 +412,15 @@ const openSMSDialog = async (index) => {
 const handleClose = (done) => {
   dialogVisible.value = false;
   SMSdialog.value = false;
-  detailVisible.value = false;
+  mainDialog.value = false;
 }
 const setMessage = (index) => {
-  message.value = "您的订单已通过，请登陆查看，已处理请忽略。系统自动发送，本条短信请勿回复，如果疑问请联系在线客服"
+  app_status.value = appStyle.value[index - 1].status;
+  app_remarks.value = appStyle.value[index - 1].remark
+}
+const setSMSMessage = (index) => {
+  message.value = messageStyle.value[index - 1];
+  console.log(messageStyle.value[index - 1]);
 }
 </script>
 <style lang="scss" scoped>

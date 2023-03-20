@@ -255,7 +255,7 @@ const changeShowButton = async (index) => {
   getTableList();
 }
 const getTableList = async () => {
-  const response = await getOrderList(phone_number_search.value, audit_result_search.value, withdraw_status_search.value, withdraw_button_search.value, -1);
+  const response = await getOrderList(phone_number_search.value, audit_result_search.value, withdraw_status_search.value, withdraw_button_search.value, '');
 
   tableData.value = response.orderList;
   let temp = []

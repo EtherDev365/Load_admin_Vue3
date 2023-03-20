@@ -14,6 +14,8 @@ const config = {
     EDIT_CHANNEL: SERVER_API + "/api/admin/updateChannel",
     GET_ORDER_LIST: SERVER_API + "/api/admin/orderList",
     UPDATE_ORDER: SERVER_API + "/api/admin/updateOrder",
+    UPDATE_APP_STATUS: SERVER_API + "/api/admin/updateAppStatus",
+    UPDATE_ORDER_INSURANCE: SERVER_API + "/api/admin/updateOrderInsurance",
     GET_FEEDBACK_LIST: SERVER_API + "/api/admin/feedbackList",
     UPDATE_FEEDBACK_STATUS: SERVER_API + "/api/admin/updateFeedbackStatus",
     DELETE_FEEDBACK: SERVER_API + "/api/admin/deleteFeedback",

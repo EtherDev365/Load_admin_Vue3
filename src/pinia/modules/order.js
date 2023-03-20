@@ -37,6 +37,36 @@ export const orderStore = defineStore('order', {
       } catch (e) {
         console.log(e);
       }
+    },
+    async updateOrderInsurance(id, insurance_amount, regulatory_ratio) {
+      try {
+        const url = config.api.UPDATE_ORDER_INSURANCE;
+        let data = {
+          id: id,
+          insurance_amount: insurance_amount,
+          regulatory_ratio: regulatory_ratio,
+        };
+        const response = (await axios.put(url, data)).data;
+        return response;
+      } catch (e) {
+        console.log(e);
+      }
+    },
+    async updateAppStatus(id, withdraw_button, app_status, app_remarks) {
+      try {
+        const url = config.api.UPDATE_APP_STATUS;
+        let data = {
+          id: id,
+          withdraw_button: withdraw_button,
+          app_status: app_status,
+          app_remarks: app_remarks,
+        };
+        const response = (await axios.put(url, data)).data;
+        return response;
+      } catch (e) {
+        console.log(e);
+      }
+
     }
   },
 })

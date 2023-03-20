@@ -47,18 +47,14 @@
 <template>
   <div class="header" :class="{ 'no-border': isHorizontalMenu }">
     <div class="navigation">
-      <logo
-        v-if="isShowLogo"
-        class="mobile"
-        :class="{ 'show-title': isHorizontalMenu }"
-      />
+      <logo v-if="isShowLogo" class="mobile" :class="{ 'show-title': isHorizontalMenu }" />
       <hamburger v-if="isShowHamburger" />
       <breadcrumbs v-if="isShowBreadcrumbs" />
     </div>
     <div class="action">
       <error-log />
-      <userinfo />
-      <change-lang />
+      <!-- <userinfo /> -->
+      <!-- <change-lang /> -->
     </div>
   </div>
 </template>
@@ -118,29 +114,36 @@ export default defineComponent({
   border-bottom: 1px solid #e0e4ef;
   display: flex;
   justify-content: space-between;
+
   &.no-border {
     border: none;
   }
+
   .navigation {
     display: flex;
     align-items: center;
     overflow: hidden;
   }
+
   .action {
     display: flex;
     align-items: center;
   }
 }
+
 .mobile {
   padding-right: 0;
+
   ::v-deep(.logo) {
     max-width: 24px;
     max-height: 24px;
   }
+
   ::v-deep(.title) {
     display: none;
   }
 }
+
 .show-title {
   ::v-deep(.title) {
     display: block;
