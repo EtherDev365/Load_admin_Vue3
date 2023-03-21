@@ -109,7 +109,9 @@
       </el-table>
     </el-scrollbar>
     <div style="display: flex; justify-content: center">
-      <el-pagination background layout="prev, pager, next" :total="100" />
+      <el-pagination v-if="paginationConfig.show && total > 0" class="pagination" :style="paginationConfig.style"
+        v-model:currentPage="pageNum" @current-change="handleCurrentChange" :page-sizes="paginationConfig.pageSizes"
+        v-model:pageSize="pageSize" :layout="paginationConfig.layout" :total="total"></el-pagination>
     </div>
   </el-card>
 
@@ -230,8 +232,23 @@ import { ref, onMounted } from 'vue';
 import { orderStore } from '@/pinia/modules/order';
 import { userStore } from '@/pinia/modules/user';
 import { storeToRefs } from 'pinia';
-const pageSize = ref(10)
-const currentPage = ref(1)
+const pageSize = ref(5)
+const pageNum = ref(1)
+const total = ref(0);
+const paginationConfig = {
+  show: true,
+  layout: 'prev, pager, next',
+  pageSizes: [10, 20, 30, 40, 50, 100],
+  style: {},
+}
+
+const handleCurrentChange = (number) => {
+  console.log(number);
+  pageNum.value = number
+  getTableList()
+}
+
+
 const tableData = ref([]);
 
 const switchList = ref([]);
@@ -290,7 +307,8 @@ const {
   updateOrder,
   updateOrderInsurance,
   updateAppStatus,
-} = orderStore()
+} = orderStore();
+const { orderList } = storeToRefs(orderStore());
 const {
   getUserById,
 } = userStore();
@@ -308,9 +326,10 @@ const changeContract = async (index) => {
   getTableList();
 }
 const getTableList = async () => {
-  const response = await getOrderList(phone_number_search.value, audit_result_search.value, withdraw_status_search.value, withdraw_button_search.value, status_search.value);
-
-  tableData.value = response.orderList;
+  const response = await getOrderList(phone_number_search.value, audit_result_search.value, withdraw_status_search.value, withdraw_button_search.value, status_search.value, pageNum.value);
+  tableData.value = orderList.value;
+  pageNum.value = response.orderList.current_page;
+  total.value = response.orderList.total;
   let temp = []
   tableData.value.map((item) => {
     temp.push(item.withdraw_button === 1 ? true : false)

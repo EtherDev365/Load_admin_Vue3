@@ -31,7 +31,9 @@
       </el-table>
     </el-scrollbar>
     <div style="display: flex; justify-content: center">
-      <el-pagination background layout="prev, pager, next" :total="100" />
+      <el-pagination v-if="paginationConfig.show && total > 0" class="pagination" :style="paginationConfig.style"
+        v-model:currentPage="pageNum" @current-change="handleCurrentChange" :page-sizes="paginationConfig.pageSizes"
+        v-model:pageSize="pageSize" :layout="paginationConfig.layout" :total="total"></el-pagination>
     </div>
   </el-card>
   <el-dialog v-model="dialogVisible" title="Tips" width="50%" :before-close="handleClose">
@@ -64,8 +66,21 @@ import { ref, onMounted } from 'vue';
 import { feedbackStore } from '@/pinia/modules/feedback';
 import { storeToRefs } from 'pinia';
 import { ElMessageBox } from 'element-plus'
-const pageSize = ref(10)
-const currentPage = ref(1)
+const pageSize = ref(5)
+const pageNum = ref(1)
+const total = ref(0);
+const paginationConfig = {
+  show: true,
+  layout: 'prev, pager, next',
+  pageSizes: [10, 20, 30, 40, 50, 100],
+  style: {},
+}
+
+const handleCurrentChange = (number) => {
+  console.log(number);
+  pageNum.value = number
+  getTableList()
+}
 const status = ref(0);
 const contents = ref('');
 const title = ref('');
@@ -88,7 +103,9 @@ onMounted(async () => {
   getTableList();
 })
 const getTableList = async () => {
-  await getFeedbackList();
+  const response = await getFeedbackList(pageNum.value);
+  pageNum.value = response.feedbackList.current_page;
+  total.value = response.feedbackList.total;
 }
 
 const openCheck = (index) => {

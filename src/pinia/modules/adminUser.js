@@ -15,11 +15,11 @@ export const adminUserStore = defineStore('adminUser', {
     setAdminUserList(adminUserList) {
       this.adminUserList = adminUserList;
     },
-    async getAdminUserList(name) {
+    async getAdminUserList(name, pageNum) {
       try {
         const url = config.api.GET_ADMIN_USER_LIST;
-        const response = (await axios.get(`${url}?name=${name}`)).data;
-        this.setAdminUserList(response.adminUserList);
+        const response = (await axios.get(`${url}?name=${name}&page=${pageNum}&results=5`)).data;
+        this.setAdminUserList(response.adminUserList.data);
         return response;
       } catch (e) {
         console.log(e);

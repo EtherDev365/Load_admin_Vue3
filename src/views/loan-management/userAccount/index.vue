@@ -18,7 +18,7 @@
       </el-form-item>
     </el-form>
     <el-scrollbar height="500px">
-      <el-table :data="userList" class="sub-account-wrapper" border header-align="center" stripe>
+      <el-table :data="userList.data" class="sub-account-wrapper" border header-align="center" stripe>
         <el-table-column prop="id" label="ID" />
         <el-table-column prop="phone_number" label="用户名" width="100" />
         <el-table-column prop="id_card_name" label="姓名" />
@@ -55,7 +55,12 @@
       </el-table>
     </el-scrollbar>
     <div style="display: flex; justify-content: center">
-      <el-pagination background layout="prev, pager, next" :total="100" />
+      <!-- <el-pagination background layout="prev, pager, next" :total="100" /> -->
+      <el-pagination v-if="paginationConfig.show && total > 0" class="pagination" :style="paginationConfig.style"
+        @size-change="handleSizeChange" @prev-click="handlePreClick" @next-click="handleNextClick"
+        v-model:currentPage="pageNum" @current-change="handleCurrentChange" :page-sizes="paginationConfig.pageSizes"
+        v-model:pageSize="pageSize" :layout="paginationConfig.layout" :total="total"></el-pagination>
+
     </div>
   </el-card>
   <el-dialog v-model="dialogVisible" title="Tips" width="50%" :before-close="handleClose">
@@ -92,8 +97,29 @@ import { userStore } from '@/pinia/modules/user';
 import { channelStore } from '@/pinia/modules/channel';
 import { storeToRefs } from 'pinia';
 import { ElMessageBox } from 'element-plus'
-const pageSize = ref(10)
-const currentPage = ref(1)
+const pageSize = ref(5)
+const pageNum = ref(1)
+const total = ref(0);
+const paginationConfig = {
+  show: true,
+  layout: 'prev, pager, next',
+  pageSizes: [10, 20, 30, 40, 50, 100],
+  style: {},
+}
+const handleSizeChange = (number) => {
+  console.log(number);
+}
+const handleCurrentChange = (number) => {
+  console.log(number);
+  pageNum.value = number
+  getTableList()
+}
+const handlePreClick = (number) => {
+  //console.log(number);
+}
+const handleNextClick = (number) => {
+  //console.log(number);
+}
 const status = ref(1);
 const login_status = ref(0);
 const phone_number = ref('');
@@ -128,17 +154,24 @@ onMounted(async () => {
   await getChannelList()
 })
 const getTableList = async () => {
-  await getUserList('', '', '');
-  let temp = []
-  userList.value.map((item) => {
+  await getUserList('', '', '', pageNum.value);
+  let temp = [];
+  pageNum.value = userList.value.current_page;
+  total.value = userList.value.total;
+  userList.value.data.map((item) => {
     temp.push(item.login_status === 1 ? true : false)
   })
+
+  console.log(temp)
+
   switchList.value = temp;
 }
 const search = async () => {
-  await getUserList(phone_number_search.value, card_name.value, channel.value);
+  await getUserList(phone_number_search.value, card_name.value, channel.value, pageNum.value);
   let temp = []
-  userList.value.map((item) => {
+  pageNum.value = userList.value.currentPage;
+  total.value = userList.value.total;
+  userList.value.data.map((item) => {
     temp.push(item.login_status === 1 ? true : false)
   })
   switchList.value = temp;
@@ -146,17 +179,17 @@ const search = async () => {
 
 const changeLoginStatus = async (index) => {
   console.log(index);
-  console.log(userList.value[index]);
-  await updateUserLoginStatus(userList.value[index].id, userList.value[index].login_status === 1 ? 0 : 1);
+  console.log(userList.value.data[index]);
+  await updateUserLoginStatus(userList.value.data[index].id, userList.value.data[index].login_status === 1 ? 0 : 1);
 }
 
 const openEdit = (index) => {
   dialogVisible.value = true;
-  console.log(userList.value[index]);
-  id.value = userList.value[index].id;
-  login_status.value = userList.value[index].login_status;
-  phone_number.value = userList.value[index].phone_number;
-  status.value = userList.value[index].status;
+  console.log(userList.value.data[index]);
+  id.value = userList.value.data[index].id;
+  login_status.value = userList.value.data[index].login_status;
+  phone_number.value = userList.value.data[index].phone_number;
+  status.value = userList.value.data[index].status;
   password.value = '';
 }
 const editItem = async () => {
@@ -170,7 +203,7 @@ const editItem = async () => {
 const deleteItem = (index) => {
   ElMessageBox.confirm('确定删除操作？')
     .then(async () => {
-      const response = await deleteUser(userList.value[index].id);
+      const response = await deleteUser(userList.value.data[index].id);
       if (response.success)
         getTableList();
     })

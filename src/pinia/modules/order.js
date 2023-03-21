@@ -12,12 +12,11 @@ export const orderStore = defineStore('order', {
     setOrderList(orderList) {
       this.orderList = orderList;
     },
-    async getOrderList(phone_number, audit_result, withdraw_status, withdraw_button, status) {
+    async getOrderList(phone_number, audit_result, withdraw_status, withdraw_button, status, pageNum) {
       try {
-        console.log(phone_number, audit_result, withdraw_status, withdraw_button, status);
         const url = config.api.GET_ORDER_LIST;
-        const response = (await axios.get(`${url}?phone_number=${phone_number}&audit_result=${audit_result}&withdraw_status=${withdraw_status}&withdraw_button=${withdraw_button}&status=${status}`)).data;
-        this.setOrderList(response.orderList);
+        const response = (await axios.get(`${url}?phone_number=${phone_number}&audit_result=${audit_result}&withdraw_status=${withdraw_status}&withdraw_button=${withdraw_button}&status=${status}&page=${pageNum}&results=5`)).data;
+        this.setOrderList(response.orderList.data);
         return response;
       } catch (e) {
         console.log(e);

@@ -12,11 +12,11 @@ export const feedbackStore = defineStore('feedback', {
     setFeedbackList(feedbackList) {
       this.feedbackList = feedbackList;
     },
-    async getFeedbackList() {
+    async getFeedbackList(pageNum) {
       try {
         const url = config.api.GET_FEEDBACK_LIST;
-        const response = (await axios.get(`${url}`)).data;
-        this.setFeedbackList(response.feedbackList);
+        const response = (await axios.get(`${url}?page=${pageNum}&results=5`)).data;
+        this.setFeedbackList(response.feedbackList.data);
         return response;
       } catch (e) {
         console.log(e);

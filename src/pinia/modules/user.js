@@ -22,10 +22,10 @@ export const userStore = defineStore('user', {
     getSelectedUser() {
       return this.selectedUser;
     },
-    async getUserList(phone_number, card_name, channel) {
+    async getUserList(phone_number, card_name, channel, pageNum) {
       try {
         const url = config.api.GET_USER_LIST;
-        const response = (await axios.get(`${url}?phone_number=${phone_number}&id_card_name=${card_name}&channel_id=${channel}`)).data;
+        const response = (await axios.get(`${url}?phone_number=${phone_number}&id_card_name=${card_name}&channel_id=${channel}&page=${pageNum}&results=5`)).data;
         this.setUserList(response.userList);
         return response;
       } catch (e) {
