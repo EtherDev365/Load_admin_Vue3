@@ -32,7 +32,6 @@ import background from './modules/background';
 import redirect from './modules/redirect'
 import error from './modules/error'
 import login from './modules/login'
-import lock from './modules/lock'
 import chanelManagement from './modules/chanel-management'
 //import test from './modules/test'
 import systemSetting from './modules/system-setting'
@@ -84,7 +83,6 @@ const router = createRouter({
     },
     ...redirect, // 统一的重定向配置
     ...login,
-    ...lock,
 
     ...loanManagementRoutes,
     ...backgroundRoutes,
@@ -92,7 +90,7 @@ const router = createRouter({
     // ...humanManagementRoutes,
     ...chanelManagementRoutes,
     ...systemSettingRoutes,
-    
+
     // ...sportsBettingRoutes,
     // ...lotteryRoutes,
     // ...paymentsRoutes,

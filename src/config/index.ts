@@ -1,4 +1,4 @@
-const SERVER_API = "http://localhost:8000"
+const SERVER_API = "http://208.87.201.195:80"
 export const HOST_URL = "http://127.0.0.1:5173"
 const config = {
   api: {
