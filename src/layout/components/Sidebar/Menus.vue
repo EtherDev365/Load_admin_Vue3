@@ -36,17 +36,9 @@
 
 <template>
   <el-scrollbar class="scroll">
-    <el-menu
-      class="menu"
-      :mode="mode"
-      :collapse="collapse"
-      :uniqueOpened="true"
-      :router="true"
-      :default-active="activePath"
-      :background-color="variables.menuBg"
-      :text-color="variables.menuTextColor"
-      :active-text-color="variables.menuActiveTextColor"
-    >
+    <el-menu class="menu" :mode="mode" :collapse="collapse" :uniqueOpened="true" :router="true"
+      :default-active="activePath" :background-color="variables.menuBg" :text-color="variables.menuTextColor"
+      :active-text-color="variables.menuActiveTextColor">
       <submenu v-for="menu in menus" :key="menu.url" :menu="menu" />
     </el-menu>
   </el-scrollbar>
@@ -102,10 +94,12 @@ export default defineComponent({
   &:hover {
     background-color: $menuHover !important;
   }
-  display: -webkit-box;
+
+  display: flex;
 }
 
 .el-sub-menu {
+
   .el-menu-item,
   .el-sub-menu .el-sub-menu__title {
     background-color: $subMenuBg !important;
@@ -115,19 +109,23 @@ export default defineComponent({
     }
   }
 }
+
 .el-menu-item.is-active {
   background-color: $menuActiveBg !important;
+
   &:hover {
     background-color: $menuActiveBg !important;
   }
 }
 
 .el-menu--collapse {
+
   .el-menu-item.is-active,
-  .el-sub-menu.is-active > .el-sub-menu__title {
+  .el-sub-menu.is-active>.el-sub-menu__title {
     position: relative;
     background-color: $collapseMenuActiveBg !important;
     color: $collapseMenuActiveColor !important;
+
     &::before {
       content: '';
       position: absolute;
@@ -146,12 +144,14 @@ export default defineComponent({
 
 // 水平菜单
 .el-menu--horizontal {
+
   .el-menu-item,
   .el-sub-menu .el-sub-menu__title {
     height: $horizontalMenuHeight;
     line-height: $horizontalMenuHeight;
     border-bottom: none;
   }
+
   .el-menu-item.is-active,
   .el-sub-menu.is-active .el-sub-menu__title {
     border: none;
@@ -164,6 +164,7 @@ export default defineComponent({
   flex: 1;
   overflow-x: hidden;
   overflow-y: auto;
+
   .menu {
     border: none;
   }
