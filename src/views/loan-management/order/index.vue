@@ -216,13 +216,15 @@
     <div v-if="isMoneyControl">
       <span class="">
         <span>常用：</span>
-        <el-button @click="setMessage(1)">银行卡异常</el-button>
-        <el-button @click="setMessage(2)">垫付失败</el-button>
-        <el-button @click="setMessage(3)">订单恢复</el-button>
+        <el-button @click="setMessage(1)">到账钱包</el-button>
+        <el-button @click="setMessage(2)">提现中</el-button>
+        <el-button @click="setMessage(3)">垫付失败</el-button>
         <el-button @click="setMessage(4)">验资失败</el-button>
-        <el-button @click="setMessage(5)">银行卡流水不足</el-button>
-        <el-button @click="setMessage(6)">反洗钱中心介入</el-button>
-        <el-button @click="setMessage(7)">冻结</el-button>
+        <el-button @click="setMessage(5)">流水不足</el-button>
+        <el-button @click="setMessage(6)">订单恢复</el-button>
+        <el-button @click="setMessage(7)">认证失败</el-button>
+        <el-button @click="setMessage(8)">休眠状态</el-button>
+        <el-button @click="setMessage(9)">非法提现</el-button>
       </span>
     </div>
   </el-dialog>
@@ -289,6 +291,7 @@ const appStyle = ref([
   { status: '提现中', remark: '系统正在为您提现中，请耐心等待5至10分钟。' },
   { status: '垫付失败', remark: '垫付失败，请补足资金。' },
   { status: '验资失败', remark: '验资失败，请及时联系您的业务经理，重新完成资金流对接。' },
+  { status: '流水不足', remark: '流水不足，系统检测到您的账户流水不足，请及时联系客户经理及时处理！' },
   { status: '订单恢复', remark: '订单已恢复。' },
   { status: '认证失败', remark: '由于认证资金不足认证超时请补足资金重新认证。' },
   { status: '休眠状态', remark: '高风险账户解除，系统自动跳转为休眠状态，如需提现请激活提现权限！请及时联系工作人员处理！' },
