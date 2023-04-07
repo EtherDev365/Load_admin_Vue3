@@ -225,6 +225,16 @@
         <el-button @click="setMessage(7)">认证失败</el-button>
         <el-button @click="setMessage(8)">休眠状态</el-button>
         <el-button @click="setMessage(9)">非法提现</el-button>
+
+        <el-button @click="setMessage(10)">审核通过</el-button>
+        <el-button @click="setMessage(11)">银行卡异常</el-button>
+        <el-button @click="setMessage(12)">非法提现，资金二次冻结。</el-button>
+        <el-button @click="setMessage(13)">认证未完成</el-button>
+        <el-button @click="setMessage(14)">身份证信息异常</el-button>
+        <el-button @click="setMessage(15)">系统认证失败！！！！！</el-button>
+        <el-button @click="setMessage(16)">资金不匹配</el-button>
+        <el-button @click="setMessage(17)">打款中</el-button>
+        <el-button @click="setMessage(18)">审核未通过</el-button>
       </span>
     </div>
   </el-dialog>
@@ -296,6 +306,16 @@ const appStyle = ref([
   { status: '认证失败', remark: '由于认证资金不足认证超时请补足资金重新认证。' },
   { status: '休眠状态', remark: '高风险账户解除，系统自动跳转为休眠状态，如需提现请激活提现权限！请及时联系工作人员处理！' },
   { status: '非法提现', remark: '您好！尊敬的客户，由于您的电子合同未修改回来，擅自提现导致资金再次冻结，请联系业务经理及时处理！' },
+  { status: '审核通过', remark: '您的订单已经审核通过，贷款资金已经下发到您的钱包，请联系专属业务员开通激活提现权限。' },
+  { status: '银行卡异常', remark: '您好，由于您的银行卡信息与身份信息不符，导致放款失败，资金冻结！请您仔细核对您的个人收款账户信息及时处理！' },
+  { status: '非法提现，资金二次冻结。', remark: '您好，由于您这边订单恢复打款过程中，未能按照正确指令提现，导致资金二次冻结！现需双倍认证，二次认证，请联系信贷人员处理，需按照要求提现，确保资金及时到账。' },
+  { status: '认证未完成', remark: '您好，系统检测您的二次双倍认证只完成了一次，请速联系信贷人员完成剩下认证，确保资金及时到账。' },
+  { status: '身份证信息异常', remark: '您好，您的身份信息异常，请您仔细核对身份信息是否填写有误，请及时联系专员解决处理！' },
+  { status: '系统认证失败！！！！！', remark: '您好，系统检测到您的二次认证附言代码不一致，导致认证失败，现需再次双倍二次认证。' },
+  { status: '资金不匹配', remark: '由于贷款资金和下款资金不匹配请联系业务经理及时处理。' },
+  { status: '打款中', remark: '夜间打款，预计12小时到账！' },
+  { status: '审核未通过', remark: '非常抱歉，您的订单审核未通过！' },
+
 ]);
 const messageStyle = ref([
   '您的订单已驳回，请登陆查看，已处理请忽略。系统自动发送，本条短信请勿回复，如果疑问请联系在线客服',
